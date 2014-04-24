@@ -1,0 +1,8 @@
+{
+	"Paris":[],
+	"Shanghai":["Yangpu Qu", "Hongkou Qu", "Zhabei Qu",
+		"Putuo Qu", "Changning Qu", "Xuhui Qu", "Jing'an Qu",
+		"Huangpu Qu", "Pudong Qu", 	"Baoshan Qu", "Jiading Qu",
+		"Qingpu Qu", "Songjiang Qu", "Jinshan Qu", "Fengxian Qu",
+		"Minhang Qu", "Chongming Qu"]
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+	<style type="text/css">
+		#map {align:center; width:500px; height:500px;}
+	</style>
+</head>
+<body>
+	<div id="map"></div>
+	
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+	<!-- script src="foursquare/geojson/foursquare-shanghai-sections-14-04-14.js"></script -->
+	<script src="archdaily/14-04-17.js"></script>
+	<script type="text/javascript">
+		function onEachFeature(feature, layer) {
+			if (feature.properties) {
+
+				layer.bindPopup("some HTML a base de feature.properties.x")
+			}
+		}
+
+
+		// coordinates lat / long + zoom
+		var map = L.map('map').setView([31.2, 121.5], 2);
+		L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png').addTo(map);
+		/*L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(map);*/
+		/*L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+		
+		L.tileLayer('http://{s}.tile.cloudmade.com/API-key/997/256/{z}/{x}/{y}.png', {
+		    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+		    maxZoom: 18
+		}).addTo(map);
+		*/
+		
+		var streets = new L.geoJson(geojsonData, {onEachFeature: onEachFeature}).addTo(map)
+		
+
+	</script>
+</bidy>
+</html>
