@@ -1,6 +1,5 @@
 from Captor import Captor
 import requests
-import json
 
 class YahooWeatherCaptor(Captor):
 	
@@ -29,6 +28,6 @@ class YahooWeatherCaptor(Captor):
 			else:
 				r.raise_for_status()
 		
-		loaded_json = json.loads(r.text)
+		loaded_json = r.json()
 		cleaned_loaded_json = self.__get_cleaned_json(loaded_json['query']['results']['channel'])
 		return cleaned_loaded_json

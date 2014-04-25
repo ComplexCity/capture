@@ -1,7 +1,6 @@
 from Captor import Captor
 from UnavailabilityError import UnavailibilityError
 import requests
-import json
 
 class GitHubCaptor(Captor):
 	
@@ -21,7 +20,7 @@ class GitHubCaptor(Captor):
 		}
 		r = requests.get(self.url_rate_limit, params=payload, headers=self.headers)
 		r.raise_for_status()
-		loaded_json = json.loads(r.text)
+		loaded_json = r.json()
 		return int(loaded_json['rate']['remaining'])
 		
 	def get_users(self, since):
@@ -43,7 +42,7 @@ class GitHubCaptor(Captor):
 			remaining = int(r.headers['X-RateLimit-Remaining'])
 		except KeyError:
 			remaining = None
-		loaded_json = json.loads(r.text)
+		loaded_json = r.json()
 		return {'remaining': remaining,
 			'since': since,
 			'users': loaded_json}

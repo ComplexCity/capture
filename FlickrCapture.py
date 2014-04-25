@@ -1,6 +1,5 @@
 from FlickrCaptor import FlickrCaptor
 from FileManager import FileManager
-from CaptorError import CaptorError
 from datetime import datetime, timedelta
 from time import sleep
 import json
@@ -9,6 +8,7 @@ from ExitLogger import ExitLogger
 import logging
 import os
 import sys
+import requests
 
 source = 'flickr'
 logger = LoggerBuilder(source, logging.WARNING, logging.INFO).get_logger()
@@ -19,6 +19,9 @@ logger = LoggerBuilder(source, logging.WARNING, logging.INFO).get_logger()
 min_date_file = "./" + source.lower() + "/min_date.json"
 min_date_format = '%Y-%m-%d'
 
+class InitError(Exception):
+	pass
+
 def get_min_date():
 	if os.path.isfile(min_date_file):
 		try:
@@ -27,9 +30,9 @@ def get_min_date():
 			f.close()
 			min_date = datetime.strptime(loaded_json['min_date'], min_date_format)
 		except (ValueError, KeyError):
-			raise CaptorError('Flickr', '', "You need to set {\"min_date\":\"YYYY-MM-DD\"} in file %s"% min_date_file)
+			raise InitError("You need to set {\"min_date\":\"YYYY-MM-DD\"} in file %s"% min_date_file)
 		return min_date
-	raise CaptorError('Flickr', '', "File %s not found. You should create this file and set {'min_date':YYYY-MM-DD} in it."% min_date_file)
+	raise InitError("File %s not found. You should create this file and set {'min_date':YYYY-MM-DD} in it."% min_date_file)
 	
 def set_min_date(new_min_date):
 	f = open(min_date_file, 'w+')
@@ -51,7 +54,7 @@ def main():
 		one_day = timedelta(days=1)
 
 		if (last_date - min_date) < zero_day:
-			raise CaptorError('Flickr', '', 'The date set as min_date in %s should not be after 2 days ago.'% min_date_file)
+			raise InitError("The date set as min_date in %s should not be after 2 days ago."% min_date_file)
 		while (last_date - min_date) >= zero_day:
 			logger.warning("---- Capting for %s" % min_date.strftime('%y-%m-%d'))
 			for city, woe_id in woe_ids.iteritems():
@@ -66,16 +69,25 @@ def main():
 			logger.warning("... Sleeping for 5 s")
 			sleep(5)
 		return 0
-
-	except Exception, e:
+		
+	except InitError as e:
+		logger.critical("%s: %s"% (type(e).__name__, e))
+		return 1	
+	except requests.exceptions.RequestException as e:
+		logger.critical("%s: %s"% (type(e).__name__, e))
+		return 2
+	except FlickrCaptor.FlickrApiError as e:
+		logger.critical("%s: %s"% (type(e).__name__, e))
+		return 3
+	except Exception as e:
 		logger.critical(e, exc_info=True)
-		return 1
+		return 4
 
 if __name__ == "__main__":
 	start = datetime.now().strftime('%y-%m-%d %H:%M:%S')
 	logger.critical("START")
 	res = main()
-	logger.critical("STOP")
+	logger.critical("STOP (%d)"% res)
 	stop = datetime.now().strftime('%y-%m-%d %H:%M:%S')
 	ExitLogger(source).log(start, stop, res)
 	sys.exit(res)

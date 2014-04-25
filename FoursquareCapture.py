@@ -7,6 +7,7 @@ from LoggerBuilder import LoggerBuilder
 import logging
 import sys
 import sqlite3
+import requests
 
 # Limits = 5000 calls/h => https://developer.foursquare.com/overview/ratelimits
 
@@ -14,16 +15,21 @@ source = 'foursquare'
 logger = LoggerBuilder(source, logging.WARNING, logging.INFO).get_logger()
 exit_logger = ExitLogger(source)
 
-foursquare_db = 'foursquare/foursquare.db'
+foursquare_db = "%s/foursquare.db"% source
+locations_file = "%s/locations.json"% source
 
+class InitError(Exception):
+	pass
 
 def main():
 	captor = FoursquareCaptor(logger)
 	file_manager = FileManager()
 	
 	try:
-		cities = file_manager.get_locations(source)
-		
+		try:
+			cities = file_manager.get_locations(source)
+		except (IOError, ValueError):
+			raise InitError("You need to set the locations in the  file %s"% locations_file)		
 		db_conn = sqlite3.connect(foursquare_db)
 		db_cursor = db_conn.cursor()
 		db_manager = FoursquareDatabaseManager(logger)
@@ -64,18 +70,27 @@ def main():
 		exit_logger.write_back_file(None)
 		return 0
 	
+	except InitError as e:
+		logger.critical("%s: %s"% (type(e).__name__, e))
+		return 1	
+	except requests.exceptions.RequestException as e:
+		logger.critical("%s: %s"% (type(e).__name__, e))
+		return 2
+#	except FlickrCaptor.FlickrApiError as e:
+#		logger.critical("%s: %s"% (type(e).__name__, e))
+#		return 3
 	except Exception, e:
 		logger.critical(e, exc_info=True)
 		exit_logger.write_back_file(remaining_locations)
 		db_conn.close()
-		return 1
+		return 4
 
 
 if __name__ == "__main__":
 	start = datetime.now().strftime('%y-%m-%d %H:%M:%S')
 	logger.critical("START")
 	res = main()
-	logger.critical("STOP")
+	logger.critical("STOP (%d)"% res)
 	stop = datetime.now().strftime('%y-%m-%d %H:%M:%S')
 	exit_logger.log(start, stop, res)
 	sys.exit(res)

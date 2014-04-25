@@ -50,10 +50,12 @@ This script could be run every hour.
 ##Exit status and Errors
 ###Exit status
 -	0 in case of success
--	1 in case of failure
+-	1 in case of an InitError (e.g. problem with the _./aqi/locations.json_ file or with the _./aqi/_ folder or sub-folders)
+-	2 in case of a RequestException (e.g. network problem, HTTP error, timeout, too many redirections, etc.)
+-	3 in case of another type of Exception
 
 ###Errors
-	[Errno 2] No such file or directory: './aqi/locations.json'
+	InitError: No such file or directory: './aqi/locations.json'
 	…
 => You have forgotten to write the _./aqi/locations.json_ file
 

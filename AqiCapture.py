@@ -5,32 +5,51 @@ from ExitLogger import ExitLogger
 import logging
 from datetime import datetime
 import sys
+import requests
 
 source = 'AQI'
 logger = LoggerBuilder(source, logging.WARNING, logging.INFO).get_logger()
+locations_file = "%s/locations.json"% source
+
+class InitError(Exception):
+	pass
 
 def main():
 	captor = AqiCaptor(logger)
 	file_manager = FileManager()
 
 	try:
-		locations = file_manager.get_locations(source)
+		try:
+			locations = file_manager.get_locations(source)
+		except (IOError, ValueError):
+			raise InitError("The %s file is missing or empty"% locations_file)
+			
 		for city, location in locations.iteritems():
 			logger.warning("- Capting for %s"% city)
 			my_date = datetime.now().strftime('%y-%m-%d-%H')
 			loaded_json = captor.get_data(location)
-			file_manager.write_json(loaded_json, source, city, my_date)
-		return 0		
+			try:
+				file_manager.write_json(loaded_json, source, city, my_date)
+			except IOError:
+				raise InitError("The folder %s is missing"% file_manager.get_folder_path(source, city))
+		
+		return 0
 
-	except Exception, e:
-		logger.critical(e, exc_info=True)
+	except InitError as e:
+		logger.critical("%s: %s"% (type(e).__name__, e))
 		return 1
+	except requests.exceptions.RequestException as e:
+		logger.critical("%s: %s"% (type(e).__name__, e))
+		return 2
+	except Exception as e:
+		logger.critical(e, exc_info=True)
+		return 2
 	
 if __name__ == "__main__":
 	start = datetime.now().strftime('%y-%m-%d %H:%M:%S')
 	logger.critical("START")
 	res = main()
-	logger.critical("STOP")
+	logger.critical("STOP (%d)"% res)
 	stop = datetime.now().strftime('%y-%m-%d %H:%M:%S')
 	ExitLogger(source).log(start, stop, res)
 	sys.exit(res)

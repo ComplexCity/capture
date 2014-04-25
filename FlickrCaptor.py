@@ -1,5 +1,4 @@
 from Captor import Captor
-from CaptorError import CaptorError
 from UnavailabilityError import UnavailibilityError
 import requests
 import json
@@ -9,6 +8,9 @@ class FlickrCaptor(Captor):
 	url = "http://api.flickr.com/services/rest/"
 	api_key = "2d5481f4b9e0d48f5f3ec89c76ad3dae"
 	#api_secret = "ace1a8f636d7055f"
+	
+	class FlickrApiError(Exception):
+		pass
 	
 	def __init__(self, logger):
 		self.logger = logger
@@ -20,11 +22,7 @@ class FlickrCaptor(Captor):
 		loaded_json = json.loads(r.text.lstrip('jsonFlickrApi(').rstrip(')'))
 		
 		if 'code' in loaded_json:
-			code = loaded_json['code']
-			if code == '10' or code == '105':
-				raise UnavailibilityError('Flickr', code, loaded_json['message'])
-			else:
-				raise CaptorError('Flickr', code, loaded_json['message'])
+			raise self.FlickrApiError('[code %s] %s'% (loaded_json['code'], loaded_json['message']))
 		else:
 			return loaded_json
 

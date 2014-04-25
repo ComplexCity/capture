@@ -6,6 +6,7 @@ import logging
 from ExitLogger import ExitLogger
 from datetime import datetime
 import sys
+import requests
 
 source = 'archdaily'
 logger = LoggerBuilder(source, logging.WARNING, logging.INFO).get_logger()
@@ -28,16 +29,19 @@ def main():
 		logger.warning("New GeoJSON written for Archdaily: %d locations"% len(loaded_json))
 		return 0
 		
-	except Exception, e:
+	except requests.exceptions.RequestException as e:
 		logger.critical(e, exc_info=True)
 		return 1
+	except Exception as e:
+		logger.critical(e, exc_info=True)
+		return 2
 
 
 if __name__ == "__main__":
 	start = datetime.now().strftime('%y-%m-%d %H:%M:%S')
 	logger.critical("START")
 	res = main()
-	logger.critical("STOP")
+	logger.critical("STOP (%d)"% res)
 	stop = datetime.now().strftime('%y-%m-%d %H:%M:%S')
 	ExitLogger(source).log(start, stop, res)
 	sys.exit(res)

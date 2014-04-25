@@ -1,10 +1,14 @@
 import json
 
 class FileManager:
-	def get_path(self, source, city, filename, extension='.json'):
+	def get_folder_path(self, source, city):
 		if city <> None:
-			return "./" + source.lower() + "/" + city.lower() + "/" + filename + extension
-		return "./" + source.lower() + "/" + filename + extension
+			return "./" + source.lower() + "/" + city.lower() + "/"
+		return "./" + source.lower() + "/"
+		
+	
+	def get_path(self, source, city, filename, extension='.json'):
+		return self.get_folder_path(source, city) + filename + extension
 	
 	def get_locations(self, source):
 		path = self.get_path(source, None, "locations")

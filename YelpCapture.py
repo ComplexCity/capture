@@ -72,7 +72,7 @@ if __name__ == "__main__":
 	start = datetime.now().strftime('%y-%m-%d %H:%M:%S')
 	logger.critical("START")
 	res = main()
-	logger.critical("STOP")
+	logger.critical("STOP (%d)"% res)
 	stop = datetime.now().strftime('%y-%m-%d %H:%M:%S')
 	ExitLogger(source).log(start, stop, res)
 	sys.exit(res)

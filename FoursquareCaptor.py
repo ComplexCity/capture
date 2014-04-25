@@ -1,6 +1,5 @@
 from Captor import Captor
 import requests
-import json
 
 class FoursquareCaptor(Captor):
 	
@@ -37,7 +36,7 @@ class FoursquareCaptor(Captor):
 			payload['section'] = section
 		r = requests.get(self.url, params=payload, headers=self.headers_anonymous)
 		r.raise_for_status()
-		loaded_json = json.loads(r.text)
+		loaded_json = r.json()
 		total_results = loaded_json['response']['totalResults']
 		self.logger.warning("Total venues: %d"% total_results)
 		venues = self.__get_only_venues(loaded_json)
@@ -52,7 +51,7 @@ class FoursquareCaptor(Captor):
 			payload['offset'] = nb_venues
 			r = requests.get(self.url, params=payload, headers=self.headers_anonymous)
 			r.raise_for_status()
-			loaded_json = json.loads(r.text)
+			loaded_json = r.json()
 			new_venues = self.__get_only_venues(loaded_json)
 			venues += new_venues
 			

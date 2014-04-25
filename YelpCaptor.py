@@ -1,7 +1,6 @@
 from Captor import Captor
 import requests
 from requests_oauthlib import OAuth1
-import json
 
 class YelpCaptor(Captor):
 	
@@ -27,10 +26,9 @@ class YelpCaptor(Captor):
 					  resource_owner_secret=self.oauth_token_secret,
 					  signature_type='query')
 		r = requests.get(self.url, params=payload, auth=auth, headers=self.headers)
-		print r.text
 		r.raise_for_status()
-		loaded_json = json.loads(r.text)
-		total_results = loaded_json['region']['total']
+		loaded_json = r.json()
+		total_results = loaded_json['total']
 		self.logger.warning("Total venues: %d"% total_results)
 		venues = loaded_json['businesses']
 		
@@ -44,7 +42,7 @@ class YelpCaptor(Captor):
 			payload['offset'] = nb_venues
 			r = requests.get(self.url, params=payload, auth=auth, headers=self.headers_anonymous)
 			r.raise_for_status()
-			loaded_json = json.loads(r.text)
+			loaded_json = r.json()
 			new_venues = loaded_json['businesses']
 			venues += new_venues
 			

@@ -39,8 +39,6 @@ This script could be run monthly.
 ##Exit status and Errors
 ###Exit status
 -	0 in case of success
--	1 in case of failure
-
-###Errors
-TBD
+-	1 in case of a RequestException (e.g. network problem, HTTP error, timeout, too many redirections, etc.)
+-	2 in case of another type of Exception
 
