@@ -5,13 +5,15 @@ class FileManager:
 		if city <> None:
 			return "./" + source.lower() + "/" + city.lower() + "/"
 		return "./" + source.lower() + "/"
-		
 	
 	def get_path(self, source, city, filename, extension='.json'):
 		return self.get_folder_path(source, city) + filename + extension
 	
+	def get_locations_path(self, source):
+		return self.get_path(source, None, "locations")
+		
 	def get_locations(self, source):
-		path = self.get_path(source, None, "locations")
+		path = self.get_locations_path(source)
 		f = open(path, 'r')
 		loaded_json = json.load(f)
 		f.close()

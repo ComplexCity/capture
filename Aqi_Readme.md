@@ -55,23 +55,11 @@ This script could be run every hour.
 -	3 in case of another type of Exception
 
 ###Errors
-	InitError: No such file or directory: './aqi/locations.json'
-	…
+	InitError: The AQI/locations.json file is missing or empty
 => You have forgotten to write the _./aqi/locations.json_ file
-
-
-	No JSON object could be decoded
-	Traceback (most recent call last):
-	  File "AqiCapture.py", line 17, in main
-	    locations = file_manager.get_locations(source)
-	…
 => Your _./aqi/locations.json_ file is empty or contains no JSON object
 
-	Expecting property name: line 2 column 2 (char 3)
-	Traceback (most recent call last):
-	  File "AqiCapture.py", line 17, in main
-	    locations = file_manager.get_locations(source)
-	…
+	InitError: The ./aqi/locations.json file does not contain any correct JSON object
 => See {How to use the script} to verify your _./aqi/locations.json_ file is correctly written and check that you use " instead of ' for your keys and values.
 
 ##Good to know

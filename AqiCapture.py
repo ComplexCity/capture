@@ -9,7 +9,6 @@ import requests
 
 source = 'AQI'
 logger = LoggerBuilder(source, logging.WARNING, logging.INFO).get_logger()
-locations_file = "%s/locations.json"% source
 
 class InitError(Exception):
 	pass
@@ -21,8 +20,10 @@ def main():
 	try:
 		try:
 			locations = file_manager.get_locations(source)
-		except (IOError, ValueError):
-			raise InitError("The %s file is missing or empty"% locations_file)
+		except IOError:
+			raise InitError("The %s file is missing"% file_manager.get_locations_path(source))
+		except ValueError:
+			raise InitError("The %s file does not contain any correct JSON object"% file_manager.get_locations_path(source))
 			
 		for city, location in locations.iteritems():
 			logger.warning("- Capting for %s"% city)
@@ -43,7 +44,7 @@ def main():
 		return 2
 	except Exception as e:
 		logger.critical(e, exc_info=True)
-		return 2
+		return 3
 	
 if __name__ == "__main__":
 	start = datetime.now().strftime('%y-%m-%d %H:%M:%S')
