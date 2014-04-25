@@ -11,6 +11,9 @@ import requests
 source = 'archdaily'
 logger = LoggerBuilder(source, logging.WARNING, logging.INFO).get_logger()
 
+class InitError(Exception):
+	pass
+
 def main():
 	try:
 		logger.warning("Capting Archdaily...")
@@ -23,18 +26,24 @@ def main():
 		
 		logger.info("Writing GeoJSON...")
 		file_manager = FileManager()
-		file_manager.write_geojson(loaded_geojson, source, None, now)
-		file_manager.write_js_geojson(loaded_geojson, source, None, now)
+		try:
+			file_manager.write_geojson(loaded_geojson, source, None, now)
+			file_manager.write_js_geojson(loaded_geojson, source, None, now)
+		except IOError:
+			raise InitError("The folder %s is missing"% file_manager.get_folder_path(source))
 		
 		logger.warning("New GeoJSON written for Archdaily: %d locations"% len(loaded_json))
 		return 0
-		
+	
+	except InitError as e:
+		logger.critical("%s: %s"% (type(e).__name__, e))
+		return 1
 	except requests.exceptions.RequestException as e:
 		logger.critical(e, exc_info=True)
-		return 1
+		return 2
 	except Exception as e:
 		logger.critical(e, exc_info=True)
-		return 2
+		return 3
 
 
 if __name__ == "__main__":

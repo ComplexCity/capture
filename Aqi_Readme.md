@@ -50,17 +50,20 @@ This script could be run every hour.
 ##Exit status and Errors
 ###Exit status
 -	0 in case of success
--	1 in case of an InitError (e.g. problem with the _./aqi/locations.json_ file or with the _./aqi/_ folder or sub-folders)
+-	1 in case of an InitError (problem with the _./aqi/locations.json_ file or with the _./aqi/_ folder or sub-folders)
 -	2 in case of a RequestException (e.g. network problem, HTTP error, timeout, too many redirections, etc.)
 -	3 in case of another type of Exception
 
 ###Errors
-	InitError: The AQI/locations.json file is missing or empty
+	InitError: File ./aqi/locations.json is missing
 => You have forgotten to write the _./aqi/locations.json_ file
-=> Your _./aqi/locations.json_ file is empty or contains no JSON object
 
 	InitError: The ./aqi/locations.json file does not contain any correct JSON object
-=> See {How to use the script} to verify your _./aqi/locations.json_ file is correctly written and check that you use " instead of ' for your keys and values.
+=> See {How to use the script} to verify that your _./aqi/locations.json_ file is correctly written and check that you use " instead of ' for your keys and values.
+
+	InitError: Folder ./aqi/{city} is missing
+=> You need to create a sub_folder in _/aqi/_ for each city
+
 
 ##Good to know
 -	The script uses an anonymous user agent to act like a normal browser.

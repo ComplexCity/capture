@@ -39,6 +39,10 @@ This script could be run monthly.
 ##Exit status and Errors
 ###Exit status
 -	0 in case of success
--	1 in case of a RequestException (e.g. network problem, HTTP error, timeout, too many redirections, etc.)
--	2 in case of another type of Exception
+-	1 in case of an InitError (if the folder _./archdaily_ is missing)
+-	2 in case of a RequestException (e.g. network problem, HTTP error, timeout, too many redirections, etc.)
+-	3 in case of another type of Exception
 
+###Errors
+	InitError: The folder ./archdaily/ is missing
+=> You have forgotten the create an _./archdaily_ folder

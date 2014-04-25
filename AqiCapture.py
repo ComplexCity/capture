@@ -21,7 +21,7 @@ def main():
 		try:
 			locations = file_manager.get_locations(source)
 		except IOError:
-			raise InitError("The %s file is missing"% file_manager.get_locations_path(source))
+			raise InitError("File %s is missing"% file_manager.get_locations_path(source))
 		except ValueError:
 			raise InitError("The %s file does not contain any correct JSON object"% file_manager.get_locations_path(source))
 			
@@ -32,7 +32,7 @@ def main():
 			try:
 				file_manager.write_json(loaded_json, source, city, my_date)
 			except IOError:
-				raise InitError("The folder %s is missing"% file_manager.get_folder_path(source, city))
+				raise InitError("Folder %s is missing"% file_manager.get_folder_path(source, city))
 		
 		return 0
 

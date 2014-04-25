@@ -16,29 +16,11 @@ logger = LoggerBuilder(source, logging.WARNING, logging.INFO).get_logger()
 # Limit for flickr.photos.search: Flickr will return at most the first 4,000 results for any given search query.
 
 # min_date should be written using the YYYY-MM-DD format
-min_date_file = "./" + source.lower() + "/min_date.json"
 min_date_format = '%Y-%m-%d'
+min_date_file = "min_date"
 
 class InitError(Exception):
 	pass
-
-def get_min_date():
-	if os.path.isfile(min_date_file):
-		try:
-			f = open(min_date_file, 'r')
-			loaded_json = json.load(f)
-			f.close()
-			min_date = datetime.strptime(loaded_json['min_date'], min_date_format)
-		except (ValueError, KeyError):
-			raise InitError("You need to set {\"min_date\":\"YYYY-MM-DD\"} in file %s"% min_date_file)
-		return min_date
-	raise InitError("File %s not found. You should create this file and set {'min_date':YYYY-MM-DD} in it."% min_date_file)
-	
-def set_min_date(new_min_date):
-	f = open(min_date_file, 'w+')
-	json.dump({'min_date':new_min_date.strftime(min_date_format)}, f)
-	f.close()
-
 
 def main():	
 	last_date = datetime.now() - timedelta(days=2)
@@ -47,25 +29,47 @@ def main():
 	file_manager = FileManager()
 	
 	try:
-		woe_ids = file_manager.get_locations(source)
+		try:
+			woe_ids = file_manager.get_locations(source)
+		except IOError:
+			raise InitError("`File %s is missing"% file_manager.get_locations_path(source))
+		except ValueError:
+			raise InitError("The %s file does not contain any correct JSON object"% file_manager.get_locations_path(source))
 		
-		min_date = get_min_date()
+		min_date_file_path = file_manager.get_path(source, None, min_date_file)
+		try:
+			min_date_json = file_manager.read_json(source, min_date_file)
+			min_date = datetime.strptime(min_date_json['min_date'], min_date_format)
+		except IOError:
+			raise InitError("File %s is missing. You should create this file and set {'min_date':YYYY-MM-DD} in it."% min_date_file_path)
+		except (ValueError, KeyError):
+			raise InitError("You need to set {\"min_date\":\"YYYY-MM-DD\"} in file %s"% min_date_file_path)
+		
 		zero_day = timedelta(days=0) 
 		one_day = timedelta(days=1)
 
 		if (last_date - min_date) < zero_day:
-			raise InitError("The date set as min_date in %s should not be after 2 days ago."% min_date_file)
+			raise InitError("The date set as min_date in %s is after 2 days ago."% min_date_file_path)
+		
 		while (last_date - min_date) >= zero_day:
 			logger.warning("---- Capting for %s" % min_date.strftime('%y-%m-%d'))
 			for city, woe_id in woe_ids.iteritems():
 				max_date = min_date + one_day
 				logger.warning("Capting for %s" % city)
 				loaded_json = captor.get_data(min_date, max_date, woe_id)
-				file_manager.write_json(loaded_json, source, city, min_date.strftime('%y-%m-%d'))
+				
+				try:
+					file_manager.write_json(loaded_json, source, city, min_date.strftime('%y-%m-%d'))
+				except IOError:
+					raise InitError("Folder %s is missing"% file_manager.get_folder_path(source, city))
+
 				logger.warning("New JSON written for %s " % city)
 			
 			min_date = max_date
-			set_min_date(min_date)
+			f = open(min_date_file_path, 'w+')
+			json.dump({'min_date':min_date.strftime(min_date_format)}, f)
+			f.close()
+
 			logger.warning("... Sleeping for 5 s")
 			sleep(5)
 		return 0

@@ -29,7 +29,6 @@ This script could be running continuously while the date is strictly before the 
 ###Common files
 -	_Captor.py_
 -	_FileManager.py_
--	_CaptorError.py_
 -	_UnavailibilityError.py_
 -	_ExitLogger.py_
 -	_LoggerBuilder.py_
@@ -72,32 +71,30 @@ This script could be running continuously while the date is strictly before the 
 ##Exit status and Errors
 ###Exit status
 -	0 in case of success
--	1 in case of problem with the _flickr/min_date.json_ file
+-	1 in case of an InitError (problem with the _./flickr/locations.json_ or _./flickr/min_date.json_ files or with the _./flickr/_ folder or sub-folders)
 -	2 in case of a RequestException (e.g. network problem, HTTP error, timeout, too many redirections, etc.)
 -	3 in case of a [Flickr API Error](https://www.flickr.com/services/api/response.json.html)
--	2 in case of another type of Exception
+-	4 in case of another type of Exception
 
 
 ###Errors
-	[Errno 2] No such file or directory: './flickr/locations.json'
-	…
+	InitError: File ./flickr/locations.json file is missing
 => You have forgotten to write the _./flickr/locations.json_ file
 
+	InitError: The ./flickr/locations.json file does not contain any correct JSON object
+=> See {How to use the script} to verify that your _./flickr/locations.json_ file is correctly written and check that you use " instead of ' for your keys and values.
 
-	No JSON object could be decoded
-	Traceback (most recent call last):
-	  File "FlickCapture.py", line 47, in main
-	    locations = file_manager.get_locations(source)
-	…
-=> Your _./flickr/locations.json_ file is empty or contains no JSON object
+	InitError: File ./flickr/min_date.json is missing. You should create this file and set {'min_date':YYYY-MM-DD} in it.
+=> You have forgotten to write the _./flickr/min_date.json_ file
 
-	Expecting property name: line 2 column 2 (char 3)
-	Traceback (most recent call last):
-	  File "FlickrCapture.py", line 47, in main
-	    locations = file_manager.get_locations(source)
-	…
-=> See {How to use the script} to verify your _./flickr/locations.json_ file is correctly written and check that you use " instead of ' for your keys and values.
+	InitError: You need to set {\"min_date\":\"YYYY-MM-DD\"} in file ./flickr/min_date.json
+=> See {How to use the script} to verify that your _./flickr/min_date.json_ file is correctly written and check that you use " instead of ' for your keys and values.
 
+	InitError: The date set as min_date in ./flickr/min_date.json is after 2 days ago.
+=> Set the date before yesterday
+
+	InitError: Folder ./flickr/{city} is missing
+=> You need to create a sub_folder in _/flickr/_ for each city
 
 ##Good to know
 ### FAQ
