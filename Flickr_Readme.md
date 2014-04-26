@@ -70,11 +70,15 @@ This script could be running continuously while the date is strictly before the 
 		
 ##Exit status and Errors
 ###Exit status
--	0 in case of success
--	1 in case of an InitError (problem with the _./flickr/locations.json_ or _./flickr/min_date.json_ files or with the _./flickr/_ folder or sub-folders)
--	2 in case of a RequestException (e.g. network problem, HTTP error, timeout, too many redirections, etc.)
--	3 in case of a [Flickr API Error](https://www.flickr.com/services/api/response.json.html)
--	4 in case of another type of Exception
+-	**0** in case of **success**
+
+-	**1** in case of an **InitError** (problem with the _./flickr/locations.json_ or _./flickr/min_date.json_ files or with the _./flickr/_ folder or sub-folders)
+
+-	**2** in case of a **RequestException** (e.g. network problem, HTTP error, timeout, too many redirections, etc.)
+
+-	**3** in case of a **Flickr API Error** (see on [Flickr](https://www.flickr.com/services/api/response.json.html) for more information)
+
+-	**4** in case of another type of Exception
 
 
 ###Errors

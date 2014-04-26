@@ -9,6 +9,9 @@ class FoursquareCaptor(Captor):
 	limit = 50
 	sections = ['food', 'drinks', 'coffee', 'shops', 'arts', 'outdoors', 'sights', 'trending', 'specials', 'nextVenues', 'topPicks']
 	
+	class FoursquareApiError(Exception):
+		pass
+	
 	def __init__(self, logger):
 		self.logger = logger
 	
@@ -19,6 +22,18 @@ class FoursquareCaptor(Captor):
 				venues.append(item['venue'])
 		return venues
 	
+	def __request_venues(self, payload):
+		r = requests.get(self.url, params=payload, headers=self.headers_anonymous)
+		try:
+			loaded_json = r.json()
+		except:
+			r.raise_for_status()
+		if r.status_code <> requests.codes.ok:
+			error = "[code %d] %s"%(loaded_json['meta']['code'], loaded_json['meta']['errorType'])
+			if 'errorDetail' in loaded_json['meta']:
+				error += ": %s"% loaded_json['meta']['errorDetail']
+			raise self.FoursquareApiError(error)
+		return loaded_json
 	
 	def get_explore_data(self, location, version_date, withNear, section=None):
 		payload = {
@@ -34,9 +49,8 @@ class FoursquareCaptor(Captor):
 			payload['radius'] = 200
 		if section <> None:
 			payload['section'] = section
-		r = requests.get(self.url, params=payload, headers=self.headers_anonymous)
-		r.raise_for_status()
-		loaded_json = r.json()
+		
+		loaded_json = self.__request_venues(payload)
 		total_results = loaded_json['response']['totalResults']
 		self.logger.warning("Total venues: %d"% total_results)
 		venues = self.__get_only_venues(loaded_json)
@@ -49,9 +63,7 @@ class FoursquareCaptor(Captor):
 		total_results -= nb_venues
 		while total_results > 0 and could_take_all == False:
 			payload['offset'] = nb_venues
-			r = requests.get(self.url, params=payload, headers=self.headers_anonymous)
-			r.raise_for_status()
-			loaded_json = r.json()
+			loaded_json = self.__request_venues(payload)
 			new_venues = self.__get_only_venues(loaded_json)
 			venues += new_venues
 			

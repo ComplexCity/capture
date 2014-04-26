@@ -71,31 +71,29 @@ This script could be run daily.
 		
 ##Exit status and Errors
 ###Exit status
--	0 in case of success
--	1 in case of failure
+-	**0** in case of **success**
+
+-	**1** in case of an **InitError** (problem with the _./foursquare/locations.json_ file or with the _./flickr/_ folder or sub-folders)
+
+-	**2** in case of a **RequestException** (e.g. network problem, HTTP error, timeout, too many redirections, etc.) different from any Foursquare API Error
+
+-	**3** in case of a **Foursquare API Error** (see on [Foursquare](https://developer.foursquare.com/overview/responses) for more information)
+
+-	**4** in case of a problem with the database (e.g. database / table / field not found)
+
+-	**5** in case of another type of Exception
 
 ###Errors
-	[Errno 2] No such file or directory: './foursquare/locations.json'
-	…
+	InitError: File ./foursquare/locations.json file is missing
 => You have forgotten to write the _./foursquare/locations.json_ file
 
+	InitError: The ./foursquare/locations.json file does not contain any correct JSON object
+=> See {How to use the script} to verify that your _./foursquare/locations.json_ file is correctly written and check that you use " instead of ' for your keys and values.
 
-	No JSON object could be decoded
-	Traceback (most recent call last):
-	  File "FoursquareCapture.py", line 22, in main
-	    locations = file_manager.get_locations(source)
-	…
-=> Your _./foursquare/locations.json_ file is empty or contains no JSON object
+	SQLite3 OperationalError: no such table: Venue
+=> See {How to use the script} to create your _foursquare/foursquare.db_
 
-	Expecting property name: line 2 column 2 (char 3)
-	Traceback (most recent call last):
-	  File "FoursquareCapture.py", line 22, in main
-	    locations = file_manager.get_locations(source)
-	…
-=> See {How to use the script} to verify your _./foursquare/locations.json_ file is correctly written and check that you use " instead of ' for your keys and values.
-
-
-##Good to know when working with Foursquare
+##Good to know
 ###What we understood writing the script
 1.	Using calculated GPS locations to make a mesh doesn't seem appropriate as it brought less results than using named places and the script always fails
 

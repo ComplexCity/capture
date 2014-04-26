@@ -32,7 +32,7 @@ def main():
 		try:
 			woe_ids = file_manager.get_locations(source)
 		except IOError:
-			raise InitError("`File %s is missing"% file_manager.get_locations_path(source))
+			raise InitError("File %s is missing"% file_manager.get_locations_path(source))
 		except ValueError:
 			raise InitError("The %s file does not contain any correct JSON object"% file_manager.get_locations_path(source))
 		
