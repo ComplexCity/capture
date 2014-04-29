@@ -12,7 +12,7 @@ For one city, all the venues are temporarily stored in the Venue table of the de
 
 When all the requests are done for a city, the script writes the json file (_YYYY-MM-DD.json_), empties the Venue table and goes to the next city.
 
-If for some reason, a request fails (e.g. Foursquare stops answering) the script logs in a special file (_foursquare-back.json_) the list the locations the script still needs to request. These locations are used in place of the full list of locations used by default. This is a convenient way to enable the script to restart from where it stopped.
+If for some reason, a request fails (e.g. Foursquare stops answering) the script logs in a special file (_foursquare-back.json_) the list of locations the script still needs to request. These locations are used in place of the full list of locations used by default. This is a convenient way to enable the script to restart from where it stopped.
 
 This script could be run daily.
 
@@ -73,7 +73,7 @@ This script could be run daily.
 ###Exit status
 -	**0** in case of **success**
 
--	**1** in case of an **InitError** (problem with the _./foursquare/locations.json_ file or with the _./flickr/_ folder or sub-folders)
+-	**1** in case of an **InitError** (problem with the _./foursquare/locations.json_ file or with the _./foursquare/_ folder or sub-folders)
 
 -	**2** in case of a **RequestException** (e.g. network problem, HTTP error, timeout, too many redirections, etc.) different from any Foursquare API Error
 
