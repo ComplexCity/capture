@@ -58,27 +58,19 @@ The script could be run hourly.
 ##Exit status and Errors
 ###Exit status
 -	0 in case of success
--	1 in case of failure
+-	1 in case of an InitError (problem with the _./yahooweather/locations.json_ file or with the _./yahooweather/_ folder or sub-folders)
+-	2 in case of a RequestException (e.g. network problem, HTTP error, timeout, too many redirections, etc.)
+-	3 in case of another type of Exception
 
 ###Errors
-	[Errno 2] No such file or directory: './yahooweather/locations.json'
-	…
+	InitError: File ./yahooweather/locations.json is missing
 => You have forgotten to write the _./yahooweather/locations.json_ file
 
+	InitError: The ./yahooweather/locations.json file does not contain any correct JSON object
+=> See {How to use the script} to verify that your _./yahooweather/locations.json_ file is correctly written and check that you use " instead of ' for your keys and values.
 
-	No JSON object could be decoded
-	Traceback (most recent call last):
-	  File "YahooWeatherCapture.py", line 22, in main
-	    locations = file_manager.get_locations(source)
-	…
-=> Your _./yahooweather/locations.json_ file is empty or contains no JSON object
-
-	Expecting property name: line 2 column 2 (char 3)
-	Traceback (most recent call last):
-	  File "YahooWeatherCapture.py", line 22, in main
-	    locations = file_manager.get_locations(source)
-	…
-=> See {How to use the script} to verify your _./yahooweather/locations.json_ file is correctly written and check that you use " instead of ' for your keys and values.
+	InitError: Folder ./yahooweather/{city} is missing
+=> You need to create a sub_folder in _/yahooweather/_ for each city
 
 ##Good to know
 ###Information update

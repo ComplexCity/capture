@@ -5,19 +5,27 @@ from GitHubCaptor import GitHubCaptor
 import logging
 import sqlite3
 from datetime import datetime
+import requests
+import sys
 
 # Limit: 5000 calls/h => https://developer.github.com/v3/#rate-limiting
+
 source = "github"
 logger = LoggerBuilder(source, logging.WARNING, logging.INFO).get_logger()
 
+github_db = "github/github.db"
+
 def main():
+	return_value = 0
+	
 	captor = GitHubCaptor(logger)
 
+	db_conn = None
 	try:
-		db_conn = sqlite3.connect('github/github.db')
+		db_conn = sqlite3.connect(github_db)
 		db_cursor = db_conn.cursor()
 		db_manager = GitHubDatabaseManager(logger)
-
+		
 		if db_manager.is_there_user_to_complete(db_cursor):
 			logger.info("==== Start to complete users ====")
 			limit = captor.get_rate_limit_remaining()
@@ -29,15 +37,23 @@ def main():
 					requested_id = row[0]
 					requested_login = row[1]
 					logger.info("fetching user: %d:%s"% (requested_id, requested_login))
-					loaded_user = captor.get_user(requested_login)
-					received_id = loaded_user['id']
+					received_id = None
+					try:
+						loaded_user = captor.get_user(requested_login)
+					except GitHubCaptor.GitHubApiError as e:
+						if "%s"%e == "Not Found":
+							received_id = 0
+						else:
+							raise
+					if received_id == None:
+						received_id = loaded_user['id']
 					if received_id <> requested_id:
-						logger.error("The login of user %d has changed")
+						logger.error("The login of user %d has changed"% requested_id)
 						db_manager.complete_error_user(db_cursor, requested_id)
 					else:
 						db_manager.complete_user(db_cursor, loaded_user)
 					completed_users += 1
-				db_conn.commit()
+					db_conn.commit()
 				logger.info("%d users completed"% completed_users)
 		else:
 			logger.info("==== Start to fetch new users ====")
@@ -57,14 +73,24 @@ def main():
 					inserted_users += 1
 				db_conn.commit()
 				logger.info("%d new users inserted"% inserted_users)
-		
-		db_conn.close()
-		return 0
 
-	except Exception, e:
+	except sqlite3.OperationalError as e:
+		logger.critical("SQLite3 %s: %s"% (type(e).__name__, e))
+		return_value = 1
+	except requests.exceptions.RequestException as e:
+		logger.critical("%s: %s"% (type(e).__name__, e))
+		return_value = 2
+	except GitHubCaptor.GitHubApiError as e:
+		logger.critical("%s: %s"% (type(e).__name__, e))
+		return_value = 3
+	except Exception as e:
 		logger.critical(e, exc_info=True)
-		db_conn.close()
-		return 1
+		return_value = 1
+	finally:
+		if db_conn<> None:
+			db_conn.close()
+		return return_value
+
 
 if __name__ == "__main__":
 	start = datetime.now().strftime('%y-%m-%d %H:%M:%S')

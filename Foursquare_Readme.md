@@ -79,7 +79,7 @@ This script could be run daily.
 
 -	**3** in case of a **Foursquare API Error** (see on [Foursquare](https://developer.foursquare.com/overview/responses) for more information)
 
--	**4** in case of a problem with the database (e.g. database / table / field not found)
+-	**4** in case of a problem with the **database** (e.g. database / table / field not found)
 
 -	**5** in case of another type of Exception
 

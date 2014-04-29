@@ -8,7 +8,6 @@ class GitHubDatabaseManager:
 	def is_there_user_to_complete(self, db_cursor):
 		db_cursor.execute('select count(*) from User where complete=0')
 		row = db_cursor.fetchone()
-		self.logger.info("GitHubDatabaseManager.is_there_user_to_complete: %d"% row[0])
 		if row[0] > 0:
 			return True
 		else:

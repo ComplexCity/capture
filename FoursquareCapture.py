@@ -31,13 +31,13 @@ def main():
 		db_conn = sqlite3.connect(file_manager.get_path(source, None, foursquare_db, ".db"))
 		db_cursor = db_conn.cursor()
 		db_manager = FoursquareDatabaseManager(logger)
+		
 		try:
 			cities = file_manager.get_locations(source)
 		except IOError:
 			raise InitError("File %s is missing"% file_manager.get_locations_path(source))
 		except ValueError:
 			raise InitError("The %s file does not contain any correct JSON object"% file_manager.get_locations_path(source))
-		
 		
 		my_cities = exit_logger.read_back_file()
 		if len(my_cities) == 0:
