@@ -7,10 +7,10 @@ class YelpCaptor(Captor):
 	url = "http://api.yelp.com/v2/search"
 
 #	api_v1_ywsid = "8wN7f46VHLdBffdCnDqPQg"
-	oauth_consumer_key = "znJD_ORvGMYy_eIaJ2_snA"
-	oauth_consumer_secret = "kuzBopIN_U4ANGAkgQQG5r_bSW8"
-	oauth_token = "04dZGXX08XOhT63Spn3bo65iidBq6LLN"
-	oauth_token_secret = "Fb5TbmK6ruu2xiezlqVSGNcMyms"
+	oauth_consumer_key = "YOUR_CONSUMER_KEY"
+	oauth_consumer_secret = "YOUR_CONSUMER_SECRET"
+	oauth_token = "YOUR_TOKEN"
+	oauth_token_secret = "YOUR_TOKEN_SECRET"
 
 	class YelpApiError(Exception):
 		pass
