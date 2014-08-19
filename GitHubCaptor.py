@@ -5,9 +5,8 @@ class GitHubCaptor(Captor):
 	
 	url_users = "https://api.github.com/users"
 	url_rate_limit = "https://api.github.com/rate_limit"
-	oauth_client_id = "2f4f86f4263eef17d525"
-	oauth_client_secret = "a28d1557d9d5529b5bd3334f53d65d6ea29d8b4b"
-	#api_secret = "ace1a8f636d7055f"
+	oauth_client_id = "YOUR_CLIENT_ID"
+	oauth_client_secret = "YOUR_CLIENT_SECRET"
 	
 	class GitHubApiError(Exception):
 		pass
