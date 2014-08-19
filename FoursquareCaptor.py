@@ -4,8 +4,8 @@ import requests
 class FoursquareCaptor(Captor):
 	
 	url = "https://api.foursquare.com/v2/venues/explore"
-	client_id = 'NQAA05J4AY1VC2CF0L5J33BYDD53ON5325VTTLBB2UGR0KI1'
-	client_secret = '4ZLLVR4FAOMYFB2GJP5BWAJDZNADSRQ3MTRVD3KWBT2BEJLJ'
+	client_id = 'YOUR_CLIENT_ID'
+	client_secret = 'YOUR_CLIENT_SECRET'
 	limit = 50
 	sections = ['food', 'drinks', 'coffee', 'shops', 'arts', 'outdoors', 'sights', 'trending', 'specials', 'nextVenues', 'topPicks']
 	
