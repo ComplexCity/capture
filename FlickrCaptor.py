@@ -6,9 +6,8 @@ import json
 class FlickrCaptor(Captor):
 	
 	url = "http://api.flickr.com/services/rest/"
-	api_key = "2d5481f4b9e0d48f5f3ec89c76ad3dae"
-	#api_secret = "ace1a8f636d7055f"
-	
+	api_key = "YOUR_API_KEY"
+
 	class FlickrApiError(Exception):
 		pass
 	
