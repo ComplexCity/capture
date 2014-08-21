@@ -6,7 +6,6 @@ class YelpCaptor(Captor):
 	
 	url = "http://api.yelp.com/v2/search"
 
-#	api_v1_ywsid = "8wN7f46VHLdBffdCnDqPQg"
 	oauth_consumer_key = "YOUR_CONSUMER_KEY"
 	oauth_consumer_secret = "YOUR_CONSUMER_SECRET"
 	oauth_token = "YOUR_TOKEN"
